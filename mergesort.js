@@ -56,13 +56,32 @@ module.exports = (function() {
 	function ms(src, dst, c, s, e) {
 		if (s < e) {
 			var m = Math.floor((e - s) / 2) + s;
-			/* Switch the places of src and dst in the recursive calls below.
-			 * This eliminates the need to copy into the auxillary array as
-			 * we are switching the roles of the original and the auxillary
-			 * arrays at each recursive depth
+			/* Switch the places of src and dst in the recursive calls below. This eliminates
+			 * the need to copy into the auxillary array as we are switching the roles of the
+			 * original and the arrays at each recursive depth
 			 */
 			ms(dst, src, c, s, m);
 			ms(dst, src, c, m + 1, e);
+			/* So, why does this work? What if dst and src get switched? Well, they don't.
+			 * Proof sketch: In the base case, the array is simply a singleton and the entire
+			 * ms(...) function does nothing; so, the following fact is trivially true: our
+			 * sorting function returns a sorted array, WITHIN ITS SPECIFIED BOUNDS, at its
+			 * second argument.
+			 * Now, assume the inductive hypothesis that the last two recursive calls to
+			 * ms(...) preserve the latter fact - i.e. they each give sorted arrays, within
+			 * their respective bounds, at each of their second arguments. The question is,
+			 * does the CURRENT call to ms(...) preserve this fact too (within its bounds, of
+			 * course, which happens to be the disjoint union of the bounds of the previous
+			 * two recursive calls). And indeed it does. This follows from two observations:
+			 * 1) the SECOND argument of the previous two recursive calls is actually the
+			 * FIRST argument of the current call.
+			 * 2) the if-else block below always copies a sorted array to the SECOND argument
+			 * of the current call, using the FIRST argument of the same, which was modified
+			 * by the previous recursive calls.
+			 * Thus, as long as the merge(...) algorithm works correctly and the logic of the
+			 * if-else block is sound, the second argument of the current call always gets a
+			 * sorted array within the currently specified bounds.
+			 */
 			if (c(src[m + 1], src[m]) < 0) {
 				merge(src, dst, c, s, m, e);
 			} else {
