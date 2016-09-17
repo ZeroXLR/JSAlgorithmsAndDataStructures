@@ -9,9 +9,7 @@ var ms = require('./mergesort.js'),
 	ra = require('./randomarray.js');
 
 function checkifsorted(array) {
-	var i,
-		length = array.length;
-	for (i = 1; i < length; ++i) {
+	for (var i = 1; i < array.length; ++i) {
 		if (array[i] < array[i - 1]) {
 			return false;
 		}
